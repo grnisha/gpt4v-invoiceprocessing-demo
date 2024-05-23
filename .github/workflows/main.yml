@@ -18,6 +18,13 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: 'Login to ACR'
+      uses: docker/login-action@v1
+      with:
+         registry: ${{ secrets.ACR_NAME }}.azurecr.io
+         username: ${{ secrets.AZURE_CREDENTIALS.clientId }}
+         password: ${{ secrets.AZURE_CREDENTIALS.clientSecret }}
 
     - name: 'Build and push Docker image'
       uses: docker/build-push-action@v2
