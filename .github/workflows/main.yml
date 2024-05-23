@@ -1,0 +1,36 @@
+name: Build and Deploy to Azure Function App
+
+on:
+  workflow_dispatch:  # Trigger the workflow on manual run
+#   push:
+#     branches:
+#       - main  # Trigger the workflow on push or pull request to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v2
+      
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Build and push Docker image'
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.ACR_NAME }}/${{ secrets.FUNCTION_APP_NAME }}:${{ github.run_number }}
+
+    - name: 'Deploy to Azure Function App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ secrets.FUNCTION_APP_NAME }}
+        images: ${{ secrets.ACR_NAME }}/${{ secrets.FUNCTION_APP_NAME }}:${{ github.run_number }}
+
+    - name: 'Logout of Azure CLI'
+      run: az logout
