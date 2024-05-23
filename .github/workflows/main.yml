@@ -22,7 +22,7 @@ jobs:
     - name: 'Build and push Docker image'
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: ./FunctionApp
         push: true
         tags: ${{ secrets.ACR_NAME }}/${{ secrets.FUNCTION_APP_NAME }}:${{ github.run_number }}
 
