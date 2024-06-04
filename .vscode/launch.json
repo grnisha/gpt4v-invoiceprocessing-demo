@@ -10,6 +10,12 @@
                 "port": 9091
             },
             "preLaunchTask": "func: host start"
+        },
+        {
+            "name": "Attach to .NET Functions",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:azureLogicAppsStandard.pickProcess}"
         }
     ]
 }

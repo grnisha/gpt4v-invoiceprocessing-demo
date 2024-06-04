@@ -1,0 +1,80 @@
+{
+  "serviceProviderConnections": {
+    "sql": {
+      "parameterValues": {
+        "managedIdentityType": "SystemAssigned",
+        "serverName": "sql-renishaw-poc-01.database.windows.net",
+        "databaseName": "db-renishaw-poc-invoice-01",
+        "authProvider": {
+          "Type": "ManagedServiceIdentity"
+        }
+      },
+      "parameterSetName": "ManagedServiceIdentity",
+      "serviceProvider": {
+        "id": "/serviceProviders/sql"
+      },
+      "displayName": "con-sql"
+    },
+    "AzureBlob": {
+      "parameterValues": {
+        "blobStorageEndpoint": "@appsetting('AzureBlob_blobStorageEndpoint')",
+        "authProvider": {
+          "Type": "ManagedServiceIdentity"
+        }
+      },
+      "parameterSetName": "ManagedServiceIdentity",
+      "serviceProvider": {
+        "id": "/serviceProviders/AzureBlob"
+      },
+      "displayName": "con-invoiceblob"
+    }
+  },
+  "managedApiConnections": {
+    "office365": {
+      "api": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/office365"
+      },
+      "connection": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/office365"
+      },
+      "authentication": "@parameters('office365-Authentication')",
+      "connectionRuntimeUrl": "@parameters('office365-ConnectionRuntimeUrl')"
+    },
+    "office365-1": {
+      "api": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/providers/Microsoft.Web/locations/@{appsetting('WORKFLOWS_LOCATION_NAME')}/managedApis/office365"
+      },
+      "connection": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')}/providers/Microsoft.Web/connections/office365-1"
+      },
+      "authentication": "@parameters('office365-1-Authentication')",
+      "connectionRuntimeUrl": "@parameters('office365-1-ConnectionRuntimeUrl')"
+    }
+  },
+  "functionConnections": {
+    "azureFunctionOperation": {
+      "function": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{parameters('azureFunctionOperation-ResourceGroup')}/providers/Microsoft.Web/sites/@{parameters('azureFunctionOperation-SiteName')}/functions/PDFProcessor"
+      },
+      "triggerUrl": "@parameters('azureFunctionOperation-TriggerUrl')",
+      "authentication": {
+        "type": "QueryString",
+        "name": "Code",
+        "value": "@appsetting('azureFunctionOperation_functionAppKey')"
+      },
+      "displayName": "con-fninvoiceprocessor"
+    },
+    "azureFunctionOperation-1": {
+      "function": {
+        "id": "/subscriptions/@{appsetting('WORKFLOWS_SUBSCRIPTION_ID')}/resourceGroups/@{parameters('azureFunctionOperation-1-ResourceGroup')}/providers/Microsoft.Web/sites/@{parameters('azureFunctionOperation-1-SiteName')}/functions/ProcessInvoice"
+      },
+      "triggerUrl": "@parameters('azureFunctionOperation-1-TriggerUrl')",
+      "authentication": {
+        "type": "QueryString",
+        "name": "Code",
+        "value": "@appsetting('azureFunctionOperation_11_functionAppKey')"
+      },
+      "displayName": "con-fn-processinvoice"
+    }
+  }
+}

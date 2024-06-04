@@ -1,0 +1,73 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "For_each_attachments": {
+        "type": "foreach",
+        "foreach": "@triggerBody()?['attachments']",
+        "actions": {
+          "Upload_blob_to_storage_container": {
+            "type": "ServiceProvider",
+            "inputs": {
+              "parameters": {
+                "containerName": "incoming-invoice",
+                "blobName": "@item()?['name']",
+                "content": "@base64ToBinary(items('For_each_attachments')?['contentBytes'])",
+                "overrideIfExists": "true"
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "AzureBlob",
+                "operationId": "uploadBlob",
+                "serviceProviderId": "/serviceProviders/AzureBlob"
+              }
+            }
+          }
+        },
+        "runAfter": {}
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_new_email_arrives_(V3)": {
+        "type": "ApiConnectionNotification",
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "office365-1"
+            }
+          },
+          "fetch": {
+            "pathTemplate": {
+              "template": "/v3/Mail/OnNewEmail"
+            },
+            "method": "get",
+            "queries": {
+              "importance": "Any",
+              "fetchOnlyWithAttachment": true,
+              "includeAttachments": true,
+              "subjectFilter": "Renishaw Invoice Test",
+              "folderPath": "Inbox"
+            }
+          },
+          "subscribe": {
+            "body": {
+              "NotificationUrl": "@{listCallbackUrl()}"
+            },
+            "pathTemplate": {
+              "template": "/GraphMailSubscriptionPoke/$subscriptions"
+            },
+            "method": "post",
+            "queries": {
+              "importance": "Any",
+              "fetchOnlyWithAttachment": true,
+              "folderPath": "Inbox"
+            }
+          }
+        },
+        "splitOn": "@triggerBody()?['value']"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

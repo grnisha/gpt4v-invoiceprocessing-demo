@@ -1,0 +1,20 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "APP_KIND": "workflowapp",
+    "ProjectDirectoryPath": "c:\\Projects\\Renishaw\\Demo\\gpt4v-invoiceprocessing-demo\\LogicApp",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureBlob_blobStorageEndpoint": "https://stgrenishawpocinvoices.blob.core.windows.net",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=f4a05821-4cc1-4dba-a371-56a217028f78;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/;ApplicationId=e2cf2971-6cc5-4d15-9b4e-46ea2089db2e",
+    "WORKFLOWS_TENANT_ID": "16b3c013-d300-468d-ac64-7eda0820b6d3",
+    "WORKFLOWS_SUBSCRIPTION_ID": "0aad35a0-e6c1-42ac-a791-5ae2850e3c90",
+    "WORKFLOWS_RESOURCE_GROUP_NAME": "rg-renishaw-poc",
+    "WORKFLOWS_LOCATION_NAME": "uksouth",
+    "WORKFLOWS_MANAGEMENT_BASE_URI": "https://management.azure.com/",
+    "office365-ConnectionRuntimeUrl": "https://logic-apis-uksouth.azure-apim.net/apim/office365/ae3378c84686400ab206784799d58458",
+    "office365-1-ConnectionRuntimeUrl": "https://logic-apis-uksouth.azure-apim.net/apim/office365/1c48ac8d943e45c69891c1d47b799761",
+    "azureFunctionOperation_functionAppKey": "pj1_JutBXAFU8bGj80aVG5p-4JmitOSNugf_Cb_OGAygAzFuQtY8pQ==",
+    "azureFunctionOperation_11_functionAppKey": "TJKE8BS5KF16fzgst58gSevmPVPr2f1dBYLZ-hqq3gwwAzFudUiNbw=="
+  }
+}

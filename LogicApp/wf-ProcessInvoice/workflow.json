@@ -1,0 +1,220 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Delete_a_blob": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "@triggerBody()?['containerInfo']?['name']",
+            "blobName": "@triggerBody()?['name']"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "deleteBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {
+          "For_each": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "For_each": {
+        "type": "foreach",
+        "foreach": "@outputs('Parse_JSON')?['body']?['Orders']",
+        "actions": {
+          "Insert_PO": {
+            "type": "ServiceProvider",
+            "inputs": {
+              "parameters": {
+                "query": "INSERT INTO [dbo].[Orders]\n           ([InvoiceNumber]\n           ,[PONumber])\n     VALUES\n           ('@{body('Parse_JSON')?['InvoiceNumber']}'\n           ,'@{items('For_each')?['PONumber']}')"
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "sql",
+                "operationId": "executeQuery",
+                "serviceProviderId": "/serviceProviders/sql"
+              }
+            }
+          }
+        },
+        "runAfter": {
+          "Insert_Invoice": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Insert_Invoice": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "query": "INSERT INTO Invoices (  \n    VendorName,  \n    VendorVATRegistrationNumber,  \n    InvoiceOrCredit,  \n    InvoiceNumber,  \n    CreditReference,  \n    InvoiceDate,  \n    Currency,  \n    NetAmount,  \n    TaxAmount,  \n    Freight,  \n    MiscCharges,  \n    TotalAmount,\n    BlobPath  \n) VALUES (  \n    '@{body('Parse_JSON')?['VendorName']}',  \n    '@{body('Parse_JSON')?['VendorVATRegistrationNumber']}',  \n    '@{body('Parse_JSON')?['InvoiceOrCredit']}',  \n    '@{body('Parse_JSON')?['InvoiceNumber']}',  \n    '@{body('Parse_JSON')?['CreditReference']}',  \n    '@{body('Parse_JSON')?['InvoiceDate']}',  \n    '@{body('Parse_JSON')?['Currency']}',  \n    '@{body('Parse_JSON')?['NetAmount']}',  \n    '@{body('Parse_JSON')?['TaxAmount']}',  \n    '@{body('Parse_JSON')?['Freight']}',  \n    '@{body('Parse_JSON')?['MiscCharges']}',  \n    '@{body('Parse_JSON')?['TotalAmount']}' ,\n    '@{body('Upload_blob_to_storage_container')?['properties']?['blobFullPathWithContainer']}'\n);  "
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "sql",
+            "operationId": "executeQuery",
+            "serviceProviderId": "/serviceProviders/sql"
+          }
+        },
+        "runAfter": {
+          "Parse_JSON": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "PDF_Processor": {
+        "type": "Function",
+        "inputs": {
+          "method": "POST",
+          "body": {
+            "blob_url": "@{triggerBody()?['name']}"
+          },
+          "function": {
+            "connectionName": "azureFunctionOperation"
+          }
+        },
+        "runAfter": {
+          "Upload_blob_to_storage_container": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Parse_JSON": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('Process_Invoice')",
+          "schema": {
+            "properties": {
+              "CreditReference": {
+                "type": "string"
+              },
+              "Currency": {
+                "type": "string"
+              },
+              "Freight": {
+                "type": "string"
+              },
+              "InvoiceDate": {
+                "type": "string"
+              },
+              "InvoiceNumber": {
+                "type": "string"
+              },
+              "InvoiceOrCredit": {
+                "type": "string"
+              },
+              "MiscCharges": {
+                "type": "string"
+              },
+              "NetAmount": {
+                "type": "string"
+              },
+              "Orders": {
+                "items": {
+                  "properties": {
+                    "PONumber": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "PONumber"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "TaxAmount": {
+                "type": "string"
+              },
+              "TotalAmount": {
+                "type": "string"
+              },
+              "VendorName": {
+                "type": "string"
+              },
+              "VendorVATRegistrationNumber": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "runAfter": {
+          "Process_Invoice": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Process_Invoice": {
+        "type": "Function",
+        "inputs": {
+          "method": "POST",
+          "body": "@body('PDF_Processor')",
+          "function": {
+            "connectionName": "azureFunctionOperation-1"
+          }
+        },
+        "runAfter": {
+          "PDF_Processor": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Read_blob_content": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "@triggerBody()?['containerInfo']?['name']",
+            "blobName": "@triggerBody()?['name']"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "readBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {}
+      },
+      "Upload_blob_to_storage_container": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "invoice",
+            "blobName": "@triggerBody()?['name']",
+            "content": "@body('Read_blob_content')?['content']",
+            "overrideIfExists": "true"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "uploadBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {
+          "Read_blob_content": [
+            "SUCCEEDED"
+          ]
+        }
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_blob_is_added_or_updated": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "path": "incoming-invoice"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "whenABlobIsAddedOrModified",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        }
+      }
+    }
+  },
+  "kind": "Stateful"
+}

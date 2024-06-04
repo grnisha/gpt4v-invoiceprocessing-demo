@@ -5,5 +5,15 @@
     "azureFunctions.projectLanguage": "Python",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
-    "azureFunctions.projectLanguageModel": 2
+    "azureFunctions.projectLanguageModel": 2,
+    "azureLogicAppsStandard.deploySubpath": "LogicApp",
+    "azureLogicAppsStandard.projectLanguage": "JavaScript",
+    "azureLogicAppsStandard.projectRuntime": "~4",
+    "azureFunctions.suppressProject": true,
+    "terminal.integrated.env.windows": {
+        "PATH": "C:\\Users\\nishapillai\\.azurelogicapps\\dependencies\\DotNetSDK;${env:PATH}"
+    },
+    "omnisharp.dotNetCliPaths": [
+        "C:\\Users\\nishapillai\\.azurelogicapps\\dependencies\\DotNetSDK"
+    ]
 }

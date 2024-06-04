@@ -1,0 +1,46 @@
+{
+  "office365-ConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('office365-ConnectionRuntimeUrl')"
+  },
+  "office365-Authentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
+  "office365-1-ConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('office365-1-ConnectionRuntimeUrl')"
+  },
+  "office365-1-Authentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
+  "azureFunctionOperation-ResourceGroup": {
+    "type": "String",
+    "value": "rg-renishaw-poc"
+  },
+  "azureFunctionOperation-SiteName": {
+    "type": "String",
+    "value": "fn-renishaw-poc-01"
+  },
+  "azureFunctionOperation-TriggerUrl": {
+    "type": "String",
+    "value": "https://fn-renishaw-poc-01.azurewebsites.net/api/pdfprocessor"
+  },
+  "azureFunctionOperation-1-ResourceGroup": {
+    "type": "String",
+    "value": "rg-renishaw-poc"
+  },
+  "azureFunctionOperation-1-SiteName": {
+    "type": "String",
+    "value": "fn-renishaw-poc-01"
+  },
+  "azureFunctionOperation-1-TriggerUrl": {
+    "type": "String",
+    "value": "https://fn-renishaw-poc-01.azurewebsites.net/api/processinvoice"
+  }
+}
